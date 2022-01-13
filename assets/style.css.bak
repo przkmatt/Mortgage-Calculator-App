@@ -1,0 +1,182 @@
+body {
+    font-family: "Lato", sans-serif;
+    margin: 0;
+    background-color: #F7F7F7;
+}
+
+.header {
+    background-color: #222222;
+    height: 144px;
+    padding: 16px 0 0 0;
+}
+
+.header-title {
+    color: #FFFFFF;
+    font-size: 48px;
+    font-weight: bold;
+    text-align: center;
+    margin: 0 auto;
+}
+
+.wrapper {
+    margin-right: auto;
+    margin-left: auto;
+    max-width: 1024px;
+    padding-right: 10px;
+    padding-left: 10px;
+    margin-top: 32px;
+}
+
+.card {
+    margin-bottom: 24px;
+    box-shadow: 0 4px 6px 0 rgba(0, 0, 0, 0.18);
+}
+
+.loan_option {
+	margin-top: 4px;
+    font-size: 14px;
+	text-align: left;
+    color: #079A82;
+	font-weight: bold;
+}
+
+.menu-row-title {
+	width: 192px;
+	margin-top: 4px;
+    font-size: 14px;
+	text-align: right;
+    color: #079A82;
+}
+
+.menu-row-input {
+    width: 60px;
+	margin-left: 10px;
+    font-size: 14px;
+	text-align: left;
+    color: #079A82;
+}
+
+.menu-row-right {
+    font-size: 14px;
+	margin-top: 4px;
+	margin-left: 3px;
+    color: #079A82;
+	text-align: center;
+}
+
+.menu-row {
+	margin-bottom: 20px;
+    font-size: 14px;
+    color: #079A82;
+	display: flex;
+}
+
+.menu {
+    height: 500px;
+    min-width: 444px;
+    background-color: #FFFFFF;
+	padding: 20px;
+}
+
+.all-boxes {
+	margin-right: auto;
+    margin-left: auto;
+    max-width: 968px;
+	display: flex;
+	flex-wrap: wrap;
+}
+
+.chart {
+	margin-right: auto;
+    margin-left: auto;
+	height: 384px;
+    max-width: 968px;
+}
+
+.no-add {
+    width: 444px;
+	display: flex;
+	flex-wrap: wrap;
+	background-color: #FFFFFF;
+	padding: 20px;
+}
+
+.add {
+    width: 444px;
+	display: flex;
+	flex-wrap: wrap;
+	background-color: #FFFFFF;
+	padding: 20px;
+}
+
+.compare {
+    width: 444px;
+	display: flex;
+	flex-wrap: wrap;
+	background-color: #FFFFFF;
+	padding: 20px;
+}
+
+.compare-chart {
+	width: 484px;
+	height: 350px;
+	margin-top: -40px;
+	margin-bottom: 0px;
+	z-index: 1;
+}
+
+.box {
+	margin-bottom: 12px;
+	z-index: 2;
+}
+
+.box-top {
+	width: 222px;
+	margin-top: 4px;
+    font-size: 14px;
+	font-weight: bold;
+	text-align: left;
+    color: #079A82;
+}
+
+.box-bottom {
+	width: 222px;
+	margin-top: 2px;
+    font-size: 14px;
+	text-align: left;
+    color: #079A82;
+}
+
+.box-title {
+	width: 444px;
+	margin-top: 4px;
+    font-size: 20px;
+	text-align: left;
+    color: #079A82;
+}
+
+.pie-option {
+	width: 484px;
+	margin-top: 4px;
+    font-size: 20px;
+	text-align: left;
+    color: #079A82;
+}
+
+.pie {
+	width: 484px;
+	height: 350px;
+	margin-top: 0px;
+	margin-bottom: 0px;
+	z-index: 1;
+	font-size: 10px;
+}
+
+.pie-add {
+	width: 484px;
+	height: 350px;
+	margin-top: 0px;
+	margin-bottom: 0px;
+	z-index: 1;
+	font-size: 10px;
+}
