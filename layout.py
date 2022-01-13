@@ -202,6 +202,40 @@ layout = html.Div(
                             ],
                             className='menu-row'
                         ),
+                        html.Div(
+                            children=[
+                                html.Nobr(id='text9', children='Loan Start Date: ', className='menu-row-title'),
+                                dcc.Dropdown(
+                                    id='demo-dropdown',
+                                    options=[
+                                        {'label': 'Jan', 'value': 1},
+                                        {'label': 'Feb', 'value': 2},
+                                        {'label': 'Mar', 'value': 3},
+                                        {'label': 'Apr', 'value': 4},
+                                        {'label': 'May', 'value': 5},
+                                        {'label': 'Jun', 'value': 6},
+                                        {'label': 'Jul', 'value': 7},
+                                        {'label': 'Aug', 'value': 8},
+                                        {'label': 'Sep', 'value': 9},
+                                        {'label': 'Oct', 'value': 10},
+                                        {'label': 'Nov', 'value': 11},
+                                        {'label': 'Dec', 'value': 12},
+                                    ],
+                                    value=current_month,
+                                    clearable=False,
+                                    className='date-dropdown'
+                                ),
+                                dcc.Input(
+                                    id='row9',
+                                    type='text',
+                                    placeholder=current_year,
+                                    className='menu-row-input'
+                                ),
+                            ],
+                            id='loan-date',
+                            className='menu-row',
+                            #style={'display': 'none'},
+                        ),
                         html.Button('Calculate', id='calc-button', n_clicks=0)
                     ],
                     className='menu'

@@ -4,6 +4,28 @@ body {
     background-color: #F7F7F7;
 }
 
+.Select-input{
+    height: 20px;
+}
+
+.Select-control{
+    height: 20px;
+}
+
+.Select-value{
+	margin-top: -5px;
+}
+
+.date-dropdown {
+    width: 60px;
+	font-size: 12px;
+	height: 5px;
+	line-height: 5px;
+	margin-left: 10px;
+	text-align: left;
+    color: #000000;
+}
+
 .header {
     background-color: #222222;
     height: 144px;

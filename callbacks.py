@@ -15,7 +15,8 @@ def get_callbacks(app):
          Output(component_id='text5', component_property='children'),
          Output(component_id='row5', component_property='placeholder'),
          Output(component_id='dollarpercent', component_property='style'),
-         Output(component_id='menu-row-right-2', component_property='style')
+         Output(component_id='menu-row-right-2', component_property='style'),
+         Output(component_id='loan-date', component_property='style'),
          ],
         [Input(component_id='loan_option', component_property='value')]
     )
@@ -29,6 +30,7 @@ def get_callbacks(app):
             row5 = pmi_rate_default
             percent_option = 'block'
             right_row = 'none'
+            loan_date = 'flex'
         else:
             text2 = 'Principal Remaining: '
             row2 = loan_rem_default
@@ -38,4 +40,6 @@ def get_callbacks(app):
             row5 = pmi_amt_default
             percent_option = 'none'
             right_row = 'block'
-        return text2, row2, text3, row3, text5, row5, {'display': percent_option}, {'display': right_row}
+            loan_date = 'none'
+        return text2, row2, text3, row3, text5, row5, {'display': percent_option}, {'display': right_row}, \
+               {'display': loan_date},
