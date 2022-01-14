@@ -206,7 +206,7 @@ layout = html.Div(
                             children=[
                                 html.Nobr(id='text9', children='Loan Start Date: ', className='menu-row-title'),
                                 dcc.Dropdown(
-                                    id='demo-dropdown',
+                                    id='date_dropdown',
                                     options=[
                                         {'label': 'Jan', 'value': 1},
                                         {'label': 'Feb', 'value': 2},
@@ -228,7 +228,7 @@ layout = html.Div(
                                 dcc.Input(
                                     id='row9',
                                     type='text',
-                                    placeholder=current_year,
+                                    value=current_year,
                                     className='menu-row-input'
                                 ),
                             ],
@@ -240,6 +240,11 @@ layout = html.Div(
                     ],
                     className='menu'
                 ),
+                #STORED DATA
+
+                dcc.Store(id='amort_schd'),
+                dcc.Store(id='amort_schd_add'),
+
                 #Compare
                 html.Div(
                     children=[
