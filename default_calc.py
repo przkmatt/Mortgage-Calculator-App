@@ -16,7 +16,7 @@ down_payment_default = 20000
 loan_time_default = 30
 interest_rate_default = 3.5
 pmi_rate_default = .5
-additional_payment_default = 0
+additional_payment_default = 100
 loan_rem_default = 180000
 loan_pay_default = 850
 pmi_amt_default = 75
@@ -24,27 +24,27 @@ mort_amt_default = 100
 tax_amt_default = 100
 loan_start_default = current_date
 
-loan_unknown = True
+loan_unknown = False
 
 if loan_unknown:
-    home_price = float(200000)
-    down_pay = float(10000)
-    loan_time = float(30)
-    interest = float(3.5)
-    pmi_rate = float(.5)
-    mtg_ins_yr = float(0)
-    tax_amt_yr = float(0)
-    add_pay = float(100)
+    home_price = float(home_price_default)
+    down_pay = float(down_payment_default)
+    loan_time = float(loan_time_default)
+    interest = float(interest_rate_default)
+    pmi_rate = float(pmi_rate_default)
+    mtg_ins_yr = float(mort_amt_default)
+    tax_amt_yr = float(tax_amt_default)
+    add_pay = float(additional_payment_default)
     loan_start = loan_start_default
 else:
-    home_price = float(200000)
-    loan_rem = float(180000)
-    loan_pay = float(832)
-    interest = float(3.5)
-    pmi_amt = float(75)
-    mtg_ins_yr = float(0)
-    tax_amt_yr = float(0)
-    add_pay = float(0)
+    home_price = float(home_price_default)
+    loan_rem = float(loan_rem_default)
+    loan_pay = float(loan_pay_default)
+    interest = float(interest_rate_default)
+    pmi_amt = float(pmi_amt_default)
+    mtg_ins_yr = float(mort_amt_default)
+    tax_amt_yr = float(tax_amt_default)
+    add_pay = float(additional_payment_default)
 
 if loan_unknown:
     df_add = pd.read_csv('Mortgage.csv')

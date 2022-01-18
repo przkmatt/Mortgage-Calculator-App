@@ -233,26 +233,24 @@ def get_callbacks(app):
                                          round(total_pay_w_esc, 2)]
                 beginning_bal = ending_bal
                 pmt_no = pmt_no + 1
-        df.to_json(path_or_buf='df.json')
-        return df.to_json(orient='columns'), df_add.to_json(orient='columns')
+        return df.to_dict(orient='records'), df_add.to_dict(orient='records')
 
     # app callback to convert df to figure
     @app.callback(
-        [Output(component_id='line-chart', component_property='figure'),
-         ],
+        Output(component_id='line-chart', component_property='figure'),
         [Input('amort_schd', 'data'),
          Input('amort_schd_add', 'data')
          ],
     )
     def calc_df(amort_schd, amort_schd_add):
         # convert to yearly dataframes
-        df_add_year = pd.read_json(amort_schd_add, orient='columns')
+        df_add_year = pd.DataFrame.from_dict(amort_schd_add, orient='columns')
         df_add_year['PAYMENT YEAR'] = pd.DatetimeIndex(df_add_year['PAYMENT DATE']).year
         df_add_year_graph = df_add_year[pd.DatetimeIndex(df_add_year['PAYMENT DATE']).month == 12]
         df_add_year = df_add_year.drop(columns=['PMT NO', 'PAYMENT DATE'])
         df_add_year = df_add_year.groupby(['PAYMENT YEAR']).sum()
 
-        df_year = pd.read_json(amort_schd, orient='columns')
+        df_year = pd.DataFrame.from_dict(amort_schd, orient='columns')
         df_year['PAYMENT YEAR'] = pd.DatetimeIndex(df_year['PAYMENT DATE']).year
         df_year_graph = df_year[pd.DatetimeIndex(df_year['PAYMENT DATE']).month == 12]
         df_year = df_year.drop(columns=['PMT NO', 'PAYMENT DATE'])
@@ -277,3 +275,112 @@ def get_callbacks(app):
             legend_y=1.15
         )
         return fig
+
+    #return comparison box
+    @app.callback(
+        [Output(component_id='compare-top-1', component_property='children'),
+         Output(component_id='compare-bottom-1', component_property='children'),
+         Output(component_id='compare-top-2', component_property='children'),
+         Output(component_id='compare-top-3', component_property='children'),
+         Output(component_id='compare-bottom-3', component_property='children'),
+         Output(component_id='compare-top-4', component_property='children'),
+         Output(component_id='compare-top-5', component_property='children'),
+         Output(component_id='compare-top-6', component_property='children'),
+         Output(component_id='compare-chart', component_property='figure'),
+         Output(component_id='compare-top-1', component_property='style'),
+         Output(component_id='compare-bottom-1', component_property='style'),
+         Output(component_id='compare-top-2', component_property='style'),
+         Output(component_id='compare-bottom-2', component_property='style'),
+         ],
+        [Input('amort_schd', 'data'),
+         Input('amort_schd_add', 'data'),
+         ],
+    )
+    def compare_box(amort_schd, amort_schd_add):
+
+        df_add = pd.DataFrame.from_dict(amort_schd_add, orient='columns')
+        df = pd.DataFrame.from_dict(amort_schd, orient='columns')
+        # getting values from dataframe
+        value_pmi_cnt_add = len(df_add[df_add['PMI'] > 0])
+        value_pmi_paid_add = round(df_add['PMI'].sum(), 2)
+        value_loan_cnt_add = len(df_add.index)
+        value_int_paid_add = round(df_add['INTEREST'].sum(), 2)
+        value_tax_paid_add = round(df_add['TAX PAYMENT'].sum(), 2)
+        value_ins_paid_add = round(df_add['MORTGAGE INSURANCE'].sum(), 2)
+        value_tot_paid_add = round(df_add['TOTAL PAYMENT W ESCROW'].sum(), 2)
+
+        value_pmi_cnt = len(df[df['PMI'] > 0])
+        value_pmi_paid = round(df['PMI'].sum(), 2)
+        value_loan_cnt = len(df.index)
+        value_int_paid = round(df['INTEREST'].sum(), 2)
+        value_tax_paid = round(df['TAX PAYMENT'].sum(), 2)
+        value_ins_paid = round(df['MORTGAGE INSURANCE'].sum(), 2)
+        value_tot_paid = round(df['TOTAL PAYMENT W ESCROW'].sum(), 2)
+
+        #compare chart
+        bar_chart = go.Figure(data=[
+            go.Bar(name='Default Loan', x=['Interest Paid'], y=[value_int_paid]),
+            go.Bar(name='With additional payment', x=['Interest Paid'], y=[value_int_paid_add])
+        ])
+        bar_chart.update_layout(barmode='group', bargap=0.15,  # gap between bars of adjacent location coordinates.
+                                bargroupgap=0.1, title='Reduction to Interest Paid', title_y=.8,
+                                xaxis_fixedrange=True,
+                                yaxis_fixedrange=True)
+        bar_chart.add_annotation(
+            go.layout.Annotation(
+                x=.1,
+                y=(value_int_paid_add + value_int_paid) / 2,
+                ax=40,
+                ay=0,
+                font=dict(
+                    family="Courier New, monospace",
+                    size=12,
+                    color="#ffffff"
+                ),
+                bgcolor="#F10000",
+                showarrow=False,
+                text=str(round((1 - (value_int_paid / value_int_paid_add)) * 100, 2)) + "%")
+        )
+
+        if value_pmi_cnt == 0:
+            value_tot_cnt_save = value_loan_cnt - value_loan_cnt_add
+            value_tot_time_save = str(math.trunc(value_tot_cnt_save / 12)) + ' Years and ' + str(
+                value_tot_cnt_save % 12) + ' Months'
+            value_tot_paid_save = value_tot_paid - value_tot_paid_add
+            value_int_save = value_int_paid - value_int_paid_add
+            value_esc_save = (value_tax_paid - value_tax_paid_add) + (value_ins_paid - value_ins_paid_add)
+
+            # Convert to dollar values where required
+            tot_save_dol = "$" + str(round(value_tot_paid_save, 2))
+            int_save_dol = "$" + str(round(value_int_save, 2))
+            esc_save_dol = "$" + str(round(value_esc_save, 2))
+
+            tot_save_bot = "Saved from " + str(round(value_tot_cnt_save, 0)) + " Payments"
+
+            return 0, 0, 0, tot_save_dol, tot_save_bot, value_tot_time_save, \
+                   int_save_dol, esc_save_dol, bar_chart, {'display': 'none'}, {'display': 'none'}, \
+                   {'display': 'none'}, {'display': 'none'}
+        else:
+            value_pmi_cnt_save = value_pmi_cnt - value_pmi_cnt_add
+            value_pmi_time_save = str(math.trunc(value_pmi_cnt_save / 12)) + ' Years and ' + str(
+                value_pmi_cnt_save % 12) + ' Months'
+            value_pmi_paid_save = value_pmi_paid - value_pmi_paid_add
+            value_tot_cnt_save = value_loan_cnt - value_loan_cnt_add
+            value_tot_time_save = str(math.trunc(value_tot_cnt_save / 12)) + ' Years and ' + str(
+                value_tot_cnt_save % 12) + ' Months'
+            value_tot_paid_save = value_tot_paid - value_tot_paid_add
+            value_int_save = value_int_paid - value_int_paid_add
+            value_esc_save = (value_tax_paid - value_tax_paid_add) + (value_ins_paid - value_ins_paid_add)
+
+            #Convert to dollar values where required
+            paid_save_dol = "$" + str(round(value_pmi_paid_save, 2))
+            tot_save_dol = "$" + str(round(value_tot_paid_save, 2))
+            int_save_dol = "$" + str(round(value_int_save, 2))
+            esc_save_dol = "$" + str(round(value_esc_save, 2))
+
+            paid_save_bot = "Saved from " + str(round(value_pmi_cnt_save, 0)) + " PMI Payments"
+            tot_save_bot = "Saved from " + str(round(value_tot_cnt_save, 0)) + " Payments"
+
+            return paid_save_dol, paid_save_bot, value_pmi_time_save, tot_save_dol, tot_save_bot, value_tot_time_save, \
+                   int_save_dol, esc_save_dol, bar_chart, {'display': 'flex'}, {'display': 'flex'}, \
+                   {'display': 'flex'}, {'display': 'flex'}
