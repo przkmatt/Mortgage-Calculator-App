@@ -360,7 +360,7 @@ layout = html.Div(
                                 ),
                                 html.Div(
                                     id='no-add-bottom-1',
-                                    children='Monthly Payment w/ Escrow & PMI',
+                                    children='Total Monthly Payment',
                                     className='box-bottom'
                                 ),
                             ],
@@ -390,7 +390,7 @@ layout = html.Div(
                                 ),
                                 html.Div(
                                     id='no-add-bottom-3',
-                                    children='Loan Only Monthly Payment',
+                                    children='66 PMI Payments',
                                     className='box-bottom'
                                 ),
                             ],
@@ -405,7 +405,7 @@ layout = html.Div(
                                 ),
                                 html.Div(
                                     id='no-add-bottom-4',
-                                    children='66 PMI Payments',
+                                    children='Total PMI to Jul 2027',
                                     className='box-bottom'
                                 ),
                             ],
@@ -420,7 +420,7 @@ layout = html.Div(
                                 ),
                                 html.Div(
                                     id='no-add-bottom-5',
-                                    children='Total PMI Paid',
+                                    children='Loan Only Monthly Payment',
                                     className='box-bottom'
                                 ),
                             ],
@@ -435,7 +435,7 @@ layout = html.Div(
                                 ),
                                 html.Div(
                                     id='no-add-bottom-6',
-                                    children='PMI Pay off Date',
+                                    children='Escrow Monthly Payment (no PMI)',
                                     className='box-bottom'
                                 ),
                             ],
