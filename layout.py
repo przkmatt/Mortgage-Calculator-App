@@ -450,7 +450,7 @@ layout = html.Div(
                                 ),
                                 html.Div(
                                     id='no-add-bottom-7',
-                                    children='Down Payment Amount',
+                                    children='Annual Payment Amount',
                                     className='box-bottom'
                                 ),
                             ],
@@ -465,7 +465,7 @@ layout = html.Div(
                                 ),
                                 html.Div(
                                     id='no-add-bottom-8',
-                                    children='Down Payment Percentage',
+                                    children='Loan Pay Off Date',
                                     className='box-bottom'
                                 ),
                             ],
@@ -480,7 +480,7 @@ layout = html.Div(
                                 ),
                                 html.Div(
                                     id='no-add-bottom-9',
-                                    children='Annual Payment Amount',
+                                    children='Down Payment Amount',
                                     className='box-bottom'
                                 ),
                             ],
@@ -495,7 +495,7 @@ layout = html.Div(
                                 ),
                                 html.Div(
                                     id='no-add-bottom-10',
-                                    children='Loan Pay Off Date',
+                                    children='Down Payment Percentage',
                                     className='box-bottom'
                                 ),
                             ],
@@ -679,7 +679,7 @@ layout = html.Div(
                                 ),
                                 html.Div(
                                     id='add-bottom-7',
-                                    children='Down Payment Amount',
+                                    children='Annual Payment Amount',
                                     className='box-bottom'
                                 ),
                             ],
@@ -694,7 +694,7 @@ layout = html.Div(
                                 ),
                                 html.Div(
                                     id='add-bottom-8',
-                                    children='Down Payment Percentage',
+                                    children='Loan Pay Off Date',
                                     className='box-bottom'
                                 ),
                             ],
@@ -709,7 +709,7 @@ layout = html.Div(
                                 ),
                                 html.Div(
                                     id='add-bottom-9',
-                                    children='Annual Payment Amount',
+                                    children='Down Payment Amount',
                                     className='box-bottom'
                                 ),
                             ],
@@ -724,7 +724,7 @@ layout = html.Div(
                                 ),
                                 html.Div(
                                     id='add-bottom-10',
-                                    children='Loan Pay Off Date',
+                                    children='Down Payment Percentage',
                                     className='box-bottom'
                                 ),
                             ],
