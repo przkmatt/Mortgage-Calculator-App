@@ -75,7 +75,7 @@ def get_callbacks(app):
     )
     def calc_df(click, loan_type, value1, value2, value3, value4, value5, value6, value7, value8, date_dropdown, row9):
         #initial run set to value
-        if value1 is None:
+        if value8 is None:
             value1=home_price_default
             value2=loan_rem_default
             value3=loan_pay_default
@@ -314,6 +314,7 @@ def get_callbacks(app):
         value_int_paid = round(df['INTEREST'].sum(), 2)
         value_tax_paid = round(df['TAX PAYMENT'].sum(), 2)
         value_ins_paid = round(df['MORTGAGE INSURANCE'].sum(), 2)
+        value_tot_pay = round(df.at[0, 'TOTAL PAYMENT'], 2)
 
         #compare chart
         bar_chart = go.Figure(data=[
@@ -346,7 +347,7 @@ def get_callbacks(app):
                 value_tot_cnt_save % 12) + ' Months'
             value_int_save = value_int_paid - value_int_paid_add
             value_esc_save = (value_tax_paid - value_tax_paid_add) + (value_ins_paid - value_ins_paid_add)
-            value_tot_paid_save = value_int_save + value_esc_save
+            value_tot_paid_save = value_int_save + value_esc_save + value_tot_pay * value_tot_cnt_save
 
             # Convert to dollar values where required
             tot_save_dol = "${:,.2f}".format(value_tot_paid_save)
@@ -368,7 +369,8 @@ def get_callbacks(app):
                 value_tot_cnt_save % 12) + ' Months'
             value_int_save = value_int_paid - value_int_paid_add
             value_esc_save = (value_tax_paid - value_tax_paid_add) + (value_ins_paid - value_ins_paid_add)
-            value_tot_paid_save = value_int_save + value_esc_save + value_pmi_paid_save
+            value_tot_paid_save = value_int_save + value_esc_save + value_pmi_paid_save \
+                                  + value_tot_pay * value_tot_cnt_save
 
             #Convert to dollar values where required
             paid_save_dol = "${:,.2f}".format(value_pmi_paid_save)
@@ -439,8 +441,8 @@ def get_callbacks(app):
         value_int_paid = round(df['INTEREST'].sum(), 2)
         value_tax_paid = round(df['TAX PAYMENT'].sum(), 2)
         value_ins_paid = round(df['MORTGAGE INSURANCE'].sum(), 2)
-        value_tot_paid = value_int_paid + value_tax_paid + value_ins_paid + value_pmi_paid
-
+        value_tot_paid = value_int_paid + value_tax_paid + value_ins_paid + value_pmi_paid \
+            + (value_tot_pay * value_loan_cnt)
         value_down_pay = home_price - round(df.at[0, 'BEGINNING BALANCE'], 2)
         value_percent_down = round(round(df.at[0, 'BEGINNING BALANCE'], 2) / home_price * 100, 2)
 
@@ -449,7 +451,7 @@ def get_callbacks(app):
         tot_pay_dol = "${:,.2f}".format(value_tot_pay)
         esc_pay_dol = "${:,.2f}".format(value_tot_pay_esc-value_tot_pay)
         ann_pay_dol = "${:,.2f}".format(value_ann_pay)
-        loan_date_shown = value_loan_date
+        loan_date_shown = datetime.strptime(value_loan_date, "%Y-%m-%d").strftime("%b %Y")
         int_paid_dol = "${:,.2f}".format(value_int_paid)
         tax_paid_dol = "${:,.2f}".format(value_tax_paid)
         ins_paid_dol = "${:,.2f}".format(value_ins_paid)
@@ -462,7 +464,7 @@ def get_callbacks(app):
             pmi_pay_dol = "${:,.2f}".format(value_pmi_pay)
             bot_3 = str(value_pmi_cnt) + " PMI Payments"
             pmi_paid_dol = "${:,.2f}".format(value_pmi_paid)
-            bot_4 = "Total PMI to " + value_pmi_date
+            bot_4 = "Total PMI to " + datetime.strptime(value_pmi_date, "%Y-%m-%d").strftime("%b %Y")
             down_pay_dol = "${:,.2f}".format(value_down_pay)
             percent_down_per = "%{:,.0f}".format(value_percent_down)
 
@@ -480,7 +482,167 @@ def get_callbacks(app):
             pmi_pay_dol = "${:,.2f}".format(value_pmi_pay)
             bot_3 = str(value_pmi_cnt) + " PMI Payments"
             pmi_paid_dol = "${:,.2f}".format(value_pmi_paid)
-            bot_4 = "Total PMI to " + value_pmi_date
+            bot_4 = "Total PMI to " + datetime.strptime(value_pmi_date, "%Y-%m-%d").strftime("%b %Y")
+            down_pay_dol = 0
+            percent_down_per = 0
+
+            top_3_show = {'display': 'flex'}
+            bot_3_show = {'display': 'flex'}
+            top_4_show = {'display': 'flex'}
+            bot_4_show = {'display': 'flex'}
+            top_9_show = {'display': 'none'}
+            bot_9_show = {'display': 'none'}
+            top_10_show = {'display': 'none'}
+            bot_10_show = {'display': 'none'}
+        elif value_pmi_cnt == 0 and loan_option == 'noloan':
+            tot_pay_esc_pmi = 0
+            bot_2 = 0
+            pmi_pay_dol = 0
+            bot_3 = 0
+            pmi_paid_dol = 0
+            bot_4 = 0
+            down_pay_dol = "${:,.2f}".format(value_down_pay)
+            percent_down_per = "%{:,.0f}".format(value_percent_down)
+
+            top_3_show = {'display': 'none'}
+            bot_3_show = {'display': 'none'}
+            top_4_show = {'display': 'none'}
+            bot_4_show = {'display': 'none'}
+            top_9_show = {'display': 'flex'}
+            bot_9_show = {'display': 'flex'}
+            top_10_show = {'display': 'flex'}
+            bot_10_show = {'display': 'flex'}
+        else:
+            tot_pay_esc_pmi = 0
+            bot_2 = 0
+            pmi_pay_dol = 0
+            bot_3 = 0
+            pmi_paid_dol = 0
+            bot_4 = 0
+            down_pay_dol = 0
+            percent_down_per = 0
+
+            top_3_show = {'display': 'none'}
+            bot_3_show = {'display': 'none'}
+            top_4_show = {'display': 'none'}
+            bot_4_show = {'display': 'none'}
+            top_9_show = {'display': 'none'}
+            bot_9_show = {'display': 'none'}
+            top_10_show = {'display': 'none'}
+            bot_10_show = {'display': 'none'}
+
+        return tot_pay_esc_pmi_dol, tot_pay_esc_dol, pmi_pay_dol, pmi_paid_dol, tot_pay_dol, \
+               esc_pay_dol, ann_pay_dol, loan_date_shown, down_pay_dol, percent_down_per, \
+               int_paid_dol, tax_paid_dol, ins_paid_dol, tot_paid_dol, bot_2, bot_3, bot_4, bot_14, \
+               top_3_show, bot_3_show, top_4_show, bot_4_show, top_9_show, bot_9_show, top_10_show, \
+               bot_10_show
+
+    #return additional payment
+    @app.callback(
+        [Output(component_id='add-top-1', component_property='children'),
+         Output(component_id='add-top-2', component_property='children'),
+         Output(component_id='add-top-3', component_property='children'),
+         Output(component_id='add-top-4', component_property='children'),
+         Output(component_id='add-top-5', component_property='children'),
+         Output(component_id='add-top-6', component_property='children'),
+         Output(component_id='add-top-7', component_property='children'),
+         Output(component_id='add-top-8', component_property='children'),
+         Output(component_id='add-top-9', component_property='children'),
+         Output(component_id='add-top-10', component_property='children'),
+         Output(component_id='add-top-11', component_property='children'),
+         Output(component_id='add-top-12', component_property='children'),
+         Output(component_id='add-top-13', component_property='children'),
+         Output(component_id='add-top-14', component_property='children'),
+         Output(component_id='add-bottom-2', component_property='children'),
+         Output(component_id='add-bottom-3', component_property='children'),
+         Output(component_id='add-bottom-4', component_property='children'),
+         Output(component_id='add-bottom-14', component_property='children'),
+
+         Output(component_id='add-top-3', component_property='style'),
+         Output(component_id='add-bottom-3', component_property='style'),
+         Output(component_id='add-top-4', component_property='style'),
+         Output(component_id='add-bottom-4', component_property='style'),
+         Output(component_id='add-top-9', component_property='style'),
+         Output(component_id='add-bottom-9', component_property='style'),
+         Output(component_id='add-top-10', component_property='style'),
+         Output(component_id='add-bottom-10', component_property='style'),
+         ],
+        [Input('amort_schd', 'data'),
+         Input('amort_schd_add', 'data'),
+         ],
+        [State(component_id='row1', component_property='value'),
+         State(component_id='loan_option', component_property='value'),
+         State(component_id='row8', component_property='value'),
+         ]
+    )
+    def default_loan_add(amort_schd, amort_schd_add, home_price, loan_option, additional_payment):
+        df = pd.DataFrame.from_dict(amort_schd_add, orient='columns')
+        df_no_add = pd.DataFrame.from_dict(amort_schd, orient='columns')
+        compare_interest = round(df['INTEREST'].sum(), 2) - round(df_no_add['INTEREST'].sum(), 2)
+        if compare_interest == 0:
+            return 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+
+        if home_price is None:
+            home_price = home_price_default
+        if additional_payment is None:
+            additional_payment = additional_payment_default
+
+        # getting values from dataframe
+        value_tot_pay_esc_pmi = round(df.at[0, 'TOTAL PAYMENT W ESCROW'], 2)
+        value_pmi_pay = round(df.at[0, 'PMI'], 2)
+        value_tot_pay_esc = value_tot_pay_esc_pmi - value_pmi_pay
+        value_tot_pay = round(df.at[0, 'TOTAL PAYMENT'], 2)
+        value_ann_pay = value_tot_pay_esc_pmi * 12
+        value_pmi_cnt = len(df[df['PMI'] > 0])
+        value_pmi_paid = round(df['PMI'].sum(), 2)
+        value_pmi_date = df.at[value_pmi_cnt, 'PAYMENT DATE']
+        value_loan_date = df.at[len(df.index) - 1, 'PAYMENT DATE']
+        value_loan_cnt = len(df.index)
+        value_int_paid = round(df['INTEREST'].sum(), 2)
+        value_tax_paid = round(df['TAX PAYMENT'].sum(), 2)
+        value_ins_paid = round(df['MORTGAGE INSURANCE'].sum(), 2)
+        value_tot_paid = value_int_paid + value_tax_paid + value_ins_paid + value_pmi_paid \
+            + ((value_tot_pay - additional_payment) * value_loan_cnt)
+        value_down_pay = home_price - round(df.at[0, 'BEGINNING BALANCE'], 2)
+        value_percent_down = round(round(df.at[0, 'BEGINNING BALANCE'], 2) / home_price * 100, 2)
+
+        #converting values to values to be seen on screen
+        tot_pay_esc_pmi_dol = "${:,.2f}".format(value_tot_pay_esc_pmi) #total mth payment
+        tot_pay_dol = "${:,.2f}".format(value_tot_pay)
+        esc_pay_dol = "${:,.2f}".format(value_tot_pay_esc-value_tot_pay)
+        ann_pay_dol = "${:,.2f}".format(value_ann_pay)
+        loan_date_shown = datetime.strptime(value_loan_date, "%Y-%m-%d").strftime("%b %Y")
+        int_paid_dol = "${:,.2f}".format(value_int_paid)
+        tax_paid_dol = "${:,.2f}".format(value_tax_paid)
+        ins_paid_dol = "${:,.2f}".format(value_ins_paid)
+        tot_paid_dol = "${:,.2f}".format(value_tot_paid)
+        bot_14 = "Total of " + str(value_loan_cnt) + " Payments"
+
+        if value_pmi_cnt > 0 and loan_option == 'noloan':
+            tot_pay_esc_dol = "${:,.2f}".format(value_tot_pay_esc)
+            bot_2 = "After " + str(value_pmi_cnt) + " Months"
+            pmi_pay_dol = "${:,.2f}".format(value_pmi_pay)
+            bot_3 = str(value_pmi_cnt) + " PMI Payments"
+            pmi_paid_dol = "${:,.2f}".format(value_pmi_paid)
+            bot_4 = "Total PMI to " + datetime.strptime(value_pmi_date, "%Y-%m-%d").strftime("%b %Y")
+            down_pay_dol = "${:,.2f}".format(value_down_pay)
+            percent_down_per = "%{:,.0f}".format(value_percent_down)
+
+            top_3_show = {'display': 'flex'}
+            bot_3_show = {'display': 'flex'}
+            top_4_show = {'display': 'flex'}
+            bot_4_show = {'display': 'flex'}
+            top_9_show = {'display': 'flex'}
+            bot_9_show = {'display': 'flex'}
+            top_10_show = {'display': 'flex'}
+            bot_10_show = {'display': 'flex'}
+        elif value_pmi_cnt > 0 and loan_option == 'loan':
+            tot_pay_esc_dol = "${:,.2f}".format(value_tot_pay_esc)
+            bot_2 = "After " + str(value_pmi_cnt) + " Months"
+            pmi_pay_dol = "${:,.2f}".format(value_pmi_pay)
+            bot_3 = str(value_pmi_cnt) + " PMI Payments"
+            pmi_paid_dol = "${:,.2f}".format(value_pmi_paid)
+            bot_4 = "Total PMI to " + datetime.strptime(value_pmi_date, "%Y-%m-%d").strftime("%b %Y")
             down_pay_dol = 0
             percent_down_per = 0
 
