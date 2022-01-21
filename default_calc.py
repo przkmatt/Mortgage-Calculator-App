@@ -165,30 +165,32 @@ value_pmi_pay_add = round(df_add.at[0, 'PMI'], 2)
 value_tot_pay_esc_add = value_tot_pay_esc_pmi_add - value_pmi_pay_add
 value_tot_pay_add = round(df_add.at[0, 'TOTAL PAYMENT'], 2)
 value_ann_pay_add = value_tot_pay_esc_pmi_add * 12
-value_pmi_cnt_add = len(df_add[df_add['PMI']>0])
+value_pmi_cnt_add = len(df_add[df_add['PMI'] > 0])
 value_pmi_paid_add = round(df_add['PMI'].sum(), 2)
 value_pmi_date_add = df_add.at[value_pmi_cnt_add, 'PAYMENT DATE']
-value_loan_date_add = df_add.at[len(df_add.index)-1, 'PAYMENT DATE']
+value_loan_date_add = df_add.at[len(df_add.index) - 1, 'PAYMENT DATE']
 value_loan_cnt_add = len(df_add.index)
 value_int_paid_add = round(df_add['INTEREST'].sum(), 2)
 value_tax_paid_add = round(df_add['TAX PAYMENT'].sum(), 2)
 value_ins_paid_add = round(df_add['MORTGAGE INSURANCE'].sum(), 2)
-value_tot_paid_add = round(df_add['TOTAL PAYMENT W ESCROW'].sum(), 2)
+value_tot_paid_add = value_int_paid_add + value_tax_paid_add + value_ins_paid_add + value_pmi_paid_add \
+    + (value_tot_pay_add * value_loan_cnt_add)
 
 value_tot_pay_esc_pmi = round(df.at[0, 'TOTAL PAYMENT W ESCROW'], 2)
 value_pmi_pay = round(df.at[0, 'PMI'], 2)
 value_tot_pay_esc = value_tot_pay_esc_pmi - value_pmi_pay
 value_tot_pay = round(df.at[0, 'TOTAL PAYMENT'], 2)
 value_ann_pay = value_tot_pay_esc_pmi * 12
-value_pmi_cnt = len(df[df['PMI']>0])
+value_pmi_cnt = len(df[df['PMI'] > 0])
 value_pmi_paid = round(df['PMI'].sum(), 2)
 value_pmi_date = df.at[value_pmi_cnt, 'PAYMENT DATE']
-value_loan_date = df.at[len(df.index)-1, 'PAYMENT DATE']
+value_loan_date = df.at[len(df.index) - 1, 'PAYMENT DATE']
 value_loan_cnt = len(df.index)
 value_int_paid = round(df['INTEREST'].sum(), 2)
 value_tax_paid = round(df['TAX PAYMENT'].sum(), 2)
 value_ins_paid = round(df['MORTGAGE INSURANCE'].sum(), 2)
-value_tot_paid = round(df['TOTAL PAYMENT W ESCROW'].sum(), 2)
+value_tot_paid = value_int_paid + value_tax_paid + value_ins_paid + value_pmi_paid \
+    + (value_tot_pay * value_loan_cnt)
 
 value_down_pay = home_price - round(df.at[0, 'BEGINNING BALANCE'], 2)
 value_percent_down = round(round(df.at[0, 'BEGINNING BALANCE'], 2) / home_price * 100, 2)
@@ -248,3 +250,173 @@ else:
                           value_ins_paid_add, value_pmi_paid_add]
     pie_two_labels = chart_two_labels_pmi
     pie_two_values = [round(df.at[0, 'BEGINNING BALANCE'], 2), value_int_paid, value_tax_paid, value_ins_paid, value_pmi_paid]
+
+#output values that go into webpage NO ADD
+tot_pay_esc_pmi_dol = "${:,.2f}".format(value_tot_pay_esc_pmi)  # total mth payment
+tot_pay_dol = "${:,.2f}".format(value_tot_pay)
+esc_pay_dol = "${:,.2f}".format(value_tot_pay_esc - value_tot_pay)
+ann_pay_dol = "${:,.2f}".format(value_ann_pay)
+loan_date_shown = value_loan_date.strftime("%b %Y")
+int_paid_dol = "${:,.2f}".format(value_int_paid)
+tax_paid_dol = "${:,.2f}".format(value_tax_paid)
+ins_paid_dol = "${:,.2f}".format(value_ins_paid)
+tot_paid_dol = "${:,.2f}".format(value_tot_paid)
+bot_14 = "Total of " + str(value_loan_cnt) + " Payments"
+
+if value_pmi_cnt > 0 and loan_unknown is True:
+    tot_pay_esc_dol = "${:,.2f}".format(value_tot_pay_esc)
+    bot_2 = "After " + str(value_pmi_cnt) + " Months"
+    pmi_pay_dol = "${:,.2f}".format(value_pmi_pay)
+    bot_3 = str(value_pmi_cnt) + " PMI Payments"
+    pmi_paid_dol = "${:,.2f}".format(value_pmi_paid)
+    bot_4 = "Total PMI to " + value_pmi_date.strftime("%b %Y")
+    down_pay_dol = "${:,.2f}".format(value_down_pay)
+    percent_down_per = "%{:,.0f}".format(value_percent_down)
+
+    top_3_show = {'display': 'flex'}
+    bot_3_show = {'display': 'flex'}
+    top_4_show = {'display': 'flex'}
+    bot_4_show = {'display': 'flex'}
+    top_9_show = {'display': 'flex'}
+    bot_9_show = {'display': 'flex'}
+    top_10_show = {'display': 'flex'}
+    bot_10_show = {'display': 'flex'}
+elif value_pmi_cnt > 0 and loan_unknown is False:
+    tot_pay_esc_dol = "${:,.2f}".format(value_tot_pay_esc)
+    bot_2 = "After " + str(value_pmi_cnt) + " Months"
+    pmi_pay_dol = "${:,.2f}".format(value_pmi_pay)
+    bot_3 = str(value_pmi_cnt) + " PMI Payments"
+    pmi_paid_dol = "${:,.2f}".format(value_pmi_paid)
+    bot_4 = "Total PMI to " + value_pmi_date.strftime("%b %Y")
+    down_pay_dol = 0
+    percent_down_per = 0
+
+    top_3_show = {'display': 'flex'}
+    bot_3_show = {'display': 'flex'}
+    top_4_show = {'display': 'flex'}
+    bot_4_show = {'display': 'flex'}
+    top_9_show = {'display': 'none'}
+    bot_9_show = {'display': 'none'}
+    top_10_show = {'display': 'none'}
+    bot_10_show = {'display': 'none'}
+elif value_pmi_cnt == 0 and loan_unknown is True:
+    tot_pay_esc_dol = 0
+    bot_2 = 0
+    pmi_pay_dol = 0
+    bot_3 = 0
+    pmi_paid_dol = 0
+    bot_4 = 0
+    down_pay_dol = "${:,.2f}".format(value_down_pay)
+    percent_down_per = "%{:,.0f}".format(value_percent_down)
+
+    top_3_show = {'display': 'none'}
+    bot_3_show = {'display': 'none'}
+    top_4_show = {'display': 'none'}
+    bot_4_show = {'display': 'none'}
+    top_9_show = {'display': 'flex'}
+    bot_9_show = {'display': 'flex'}
+    top_10_show = {'display': 'flex'}
+    bot_10_show = {'display': 'flex'}
+else:
+    tot_pay_esc_dol = 0
+    bot_2 = 0
+    pmi_pay_dol = 0
+    bot_3 = 0
+    pmi_paid_dol = 0
+    bot_4 = 0
+    down_pay_dol = 0
+    percent_down_per = 0
+
+    top_3_show = {'display': 'none'}
+    bot_3_show = {'display': 'none'}
+    top_4_show = {'display': 'none'}
+    bot_4_show = {'display': 'none'}
+    top_9_show = {'display': 'none'}
+    bot_9_show = {'display': 'none'}
+    top_10_show = {'display': 'none'}
+    bot_10_show = {'display': 'none'}
+
+#output values that go into webpage ADDITIONAL PAYMENT
+tot_pay_esc_pmi_dol_add = "${:,.2f}".format(value_tot_pay_esc_pmi_add)  # total mth payment
+tot_pay_dol_add = "${:,.2f}".format(value_tot_pay_add)
+esc_pay_dol_add = "${:,.2f}".format(value_tot_pay_esc_add - value_tot_pay_add)
+ann_pay_dol_add = "${:,.2f}".format(value_ann_pay_add)
+loan_date_shown_add = value_loan_date_add.strftime("%b %Y")
+int_paid_dol_add = "${:,.2f}".format(value_int_paid_add)
+tax_paid_dol_add = "${:,.2f}".format(value_tax_paid_add)
+ins_paid_dol_add = "${:,.2f}".format(value_ins_paid_add)
+tot_paid_dol_add = "${:,.2f}".format(value_tot_paid_add)
+bot_14_add = "Total of " + str(value_loan_cnt_add) + " Payments"
+
+if value_pmi_cnt > 0 and loan_unknown is True:
+    tot_pay_esc_dol_add = "${:,.2f}".format(value_tot_pay_esc_add)
+    bot_2_add = "After " + str(value_pmi_cnt_add) + " Months"
+    pmi_pay_dol_add = "${:,.2f}".format(value_pmi_pay_add)
+    bot_3_add = str(value_pmi_cnt_add) + " PMI Payments"
+    pmi_paid_dol_add = "${:,.2f}".format(value_pmi_paid_add)
+    bot_4_add = "Total PMI to " + value_pmi_date_add.strftime("%b %Y")
+    down_pay_dol_add = "${:,.2f}".format(value_down_pay)
+    percent_down_per_add = "%{:,.0f}".format(value_percent_down)
+
+    top_3_show_add = {'display': 'flex'}
+    bot_3_show_add = {'display': 'flex'}
+    top_4_show_add = {'display': 'flex'}
+    bot_4_show_add = {'display': 'flex'}
+    top_9_show_add = {'display': 'flex'}
+    bot_9_show_add = {'display': 'flex'}
+    top_10_show_add = {'display': 'flex'}
+    bot_10_show_add = {'display': 'flex'}
+elif value_pmi_cnt > 0 and loan_unknown is False:
+    tot_pay_esc_dol_add = "${:,.2f}".format(value_tot_pay_esc_add)
+    bot_2_add = "After " + str(value_pmi_cnt_add) + " Months"
+    pmi_pay_dol_add = "${:,.2f}".format(value_pmi_pay_add)
+    bot_3_add = str(value_pmi_cnt_add) + " PMI Payments"
+    pmi_paid_dol_add = "${:,.2f}".format(value_pmi_paid_add)
+    bot_4_add = "Total PMI to " + value_pmi_date_add.strftime("%b %Y")
+    down_pay_dol_add = 0
+    percent_down_per_add = 0
+
+    top_3_show_add = {'display': 'flex'}
+    bot_3_show_add = {'display': 'flex'}
+    top_4_show_add = {'display': 'flex'}
+    bot_4_show_add = {'display': 'flex'}
+    top_9_show_add = {'display': 'none'}
+    bot_9_show_add = {'display': 'none'}
+    top_10_show_add = {'display': 'none'}
+    bot_10_show_add = {'display': 'none'}
+elif value_pmi_cnt == 0 and loan_unknown is True:
+    tot_pay_esc_dol_add = 0
+    bot_2_add = 0
+    pmi_pay_dol_add = 0
+    bot_3_add = 0
+    pmi_paid_dol_add = 0
+    bot_4_add = 0
+    down_pay_dol_add = "${:,.2f}".format(value_down_pay)
+    percent_down_per_add = "%{:,.0f}".format(value_percent_down)
+
+    top_3_show_add = {'display': 'none'}
+    bot_3_show_add = {'display': 'none'}
+    top_4_show_add = {'display': 'none'}
+    bot_4_show_add = {'display': 'none'}
+    top_9_show_add = {'display': 'flex'}
+    bot_9_show_add = {'display': 'flex'}
+    top_10_show_add = {'display': 'flex'}
+    bot_10_show_add = {'display': 'flex'}
+else:
+    tot_pay_esc_dol_add = 0
+    bot_2_add = 0
+    pmi_pay_dol_add = 0
+    bot_3_add = 0
+    pmi_paid_dol_add = 0
+    bot_4_add = 0
+    down_pay_dol_add = 0
+    percent_down_per_add = 0
+
+    top_3_show_add = {'display': 'none'}
+    bot_3_show_add = {'display': 'none'}
+    top_4_show_add = {'display': 'none'}
+    bot_4_show_add = {'display': 'none'}
+    top_9_show_add = {'display': 'none'}
+    bot_9_show_add = {'display': 'none'}
+    top_10_show_add = {'display': 'none'}
+    bot_10_show_add = {'display': 'none'}

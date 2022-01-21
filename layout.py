@@ -5,14 +5,21 @@ from default_calc import current_day, current_month, current_year, current_date,
     loan_time_default, interest_rate_default, pmi_rate_default, additional_payment_default, loan_rem_default, loan_pay_default, \
     pmi_amt_default, mort_amt_default, tax_amt_default, loan_start_default, pie_one_labels_add, pie_one_values_add, pie_one_labels, \
     pie_one_values, pie_two_labels_add, pie_two_values_add, pie_two_labels, pie_two_values, value_int_paid, value_int_paid_add, \
-    df_year_graph, value_tot_paid_save, df_add_year_graph
+    df_year_graph, value_tot_paid_save, df_add_year_graph, tot_pay_esc_pmi_dol, tot_pay_esc_pmi_dol_add, \
+    tot_pay_esc_dol, tot_pay_esc_dol_add, pmi_pay_dol, pmi_pay_dol_add, pmi_paid_dol, pmi_paid_dol_add, tot_pay_dol, \
+    tot_pay_dol_add, esc_pay_dol, esc_pay_dol_add, ann_pay_dol, ann_pay_dol_add, loan_date_shown, loan_date_shown_add, \
+    down_pay_dol, down_pay_dol_add, percent_down_per, percent_down_per_add, int_paid_dol, int_paid_dol_add, \
+    tax_paid_dol, tax_paid_dol_add, ins_paid_dol, ins_paid_dol_add, tot_paid_dol, tot_paid_dol_add, bot_2, bot_2_add, \
+    bot_3, bot_3_add, bot_4, bot_4_add, bot_14, bot_14_add, top_3_show, top_3_show_add, bot_3_show, bot_3_show_add, \
+    top_4_show, top_4_show_add, bot_4_show, bot_4_show_add, top_9_show, top_9_show_add, bot_9_show, bot_9_show_add, \
+    top_10_show, top_10_show_add, bot_10_show, bot_10_show_add
 
 
 #create pie charts with values and labels
 pie_one_add = go.Figure(data=[go.Pie(labels=pie_one_labels_add, values=pie_one_values_add, sort=False)])
 pie_one = go.Figure(data=[go.Pie(labels=pie_one_labels, values=pie_one_values, sort=False)])
-pie_two_add = go.Figure(data=[go.Pie(labels=pie_two_labels_add, values=pie_two_values_add)])
-pie_two = go.Figure(data=[go.Pie(labels=pie_two_labels, values=pie_two_values)])
+pie_two_add = go.Figure(data=[go.Pie(labels=pie_two_labels_add, values=pie_two_values_add, sort=False)])
+pie_two = go.Figure(data=[go.Pie(labels=pie_two_labels, values=pie_two_values, sort=False)])
 
 #craete bar graph to show differences in payment
 bar_chart = go.Figure(data=[
@@ -244,6 +251,10 @@ layout = html.Div(
 
                 dcc.Store(id='amort_schd'),
                 dcc.Store(id='amort_schd_add'),
+                dcc.Store(id='pie_one'),
+                dcc.Store(id='pie_one_add'),
+                dcc.Store(id='pie_two'),
+                dcc.Store(id='pie_two_add'),
 
                 #Compare
                 html.Div(
@@ -579,7 +590,7 @@ layout = html.Div(
                 html.Div(
                     children=[
                         html.Div(children='Additional Payment',className='box-title'),
-                        #each box that contains the info
+                        # each box that contains the info
                         html.Nobr(
                             children=[
                                 html.Div(
@@ -589,7 +600,7 @@ layout = html.Div(
                                 ),
                                 html.Div(
                                     id='add-bottom-1',
-                                    children='Monthly Payment w/ Escrow & PMI',
+                                    children='Total Monthly Payment',
                                     className='box-bottom'
                                 ),
                             ],
@@ -619,7 +630,7 @@ layout = html.Div(
                                 ),
                                 html.Div(
                                     id='add-bottom-3',
-                                    children='Loan Only Monthly Payment',
+                                    children='66 PMI Payments',
                                     className='box-bottom'
                                 ),
                             ],
@@ -634,7 +645,7 @@ layout = html.Div(
                                 ),
                                 html.Div(
                                     id='add-bottom-4',
-                                    children='66 PMI Payments',
+                                    children='Total PMI to Jul 2027',
                                     className='box-bottom'
                                 ),
                             ],
@@ -649,7 +660,7 @@ layout = html.Div(
                                 ),
                                 html.Div(
                                     id='add-bottom-5',
-                                    children='Total PMI Paid',
+                                    children='Loan Only Monthly Payment',
                                     className='box-bottom'
                                 ),
                             ],
@@ -664,7 +675,7 @@ layout = html.Div(
                                 ),
                                 html.Div(
                                     id='add-bottom-6',
-                                    children='PMI Pay off Date',
+                                    children='Escrow Monthly Payment (no PMI)',
                                     className='box-bottom'
                                 ),
                             ],
