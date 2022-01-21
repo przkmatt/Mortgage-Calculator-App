@@ -12,7 +12,9 @@ from default_calc import current_day, current_month, current_year, current_date,
     tax_paid_dol, tax_paid_dol_add, ins_paid_dol, ins_paid_dol_add, tot_paid_dol, tot_paid_dol_add, bot_2, bot_2_add, \
     bot_3, bot_3_add, bot_4, bot_4_add, bot_14, bot_14_add, top_3_show, top_3_show_add, bot_3_show, bot_3_show_add, \
     top_4_show, top_4_show_add, bot_4_show, bot_4_show_add, top_9_show, top_9_show_add, bot_9_show, bot_9_show_add, \
-    top_10_show, top_10_show_add, bot_10_show, bot_10_show_add
+    top_10_show, top_10_show_add, bot_10_show, bot_10_show_add, paid_save_dol, tot_save_dol, int_save_dol, esc_save_dol, \
+    paid_save_bottom, tot_save_bottom, compare_bot_1, compare_bot_2, compare_top_2, compare_top_1, value_pmi_time_save, \
+    value_tot_time_save
 
 
 #create pie charts with values and labels
@@ -121,10 +123,10 @@ layout = html.Div(
                                 dcc.RadioItems(
                                     id='dollarpercent',
                                     options=[
-                                       {'label': '$', 'value': 'dollar'},
-                                       {'label': '%', 'value': 'percent'},
+                                        {'label': '$', 'value': 'dollar'},
+                                        {'label': '%', 'value': 'percent'},
                                     ],
-                                    value='percent',
+                                    value='dollar',
                                     style={'display': 'none'},
                                     className='menu-row-right'
                                 ),
@@ -140,7 +142,7 @@ layout = html.Div(
                                     placeholder=loan_pay_default,
                                     className='menu-row-input'
                                 ),
-                                html.Nobr(children='$', className='menu-row-right'),
+                                html.Nobr(id='right3', children='$', className='menu-row-right'),
                             ],
                             className='menu-row'
                         ),
@@ -166,7 +168,7 @@ layout = html.Div(
                                     placeholder=pmi_amt_default,
                                     className='menu-row-input'
                                 ),
-                                html.Nobr(children='$', className='menu-row-right'),
+                                html.Nobr(id='right5', children='$', className='menu-row-right'),
                             ],
                             className='menu-row'
                         ),
@@ -241,7 +243,7 @@ layout = html.Div(
                             ],
                             id='loan-date',
                             className='menu-row',
-                            #style={'display': 'none'},
+                            style={'display': 'none'},
                         ),
                         html.Button('Calculate', id='calc-button', n_clicks=0)
                     ],
@@ -251,10 +253,10 @@ layout = html.Div(
 
                 dcc.Store(id='amort_schd'),
                 dcc.Store(id='amort_schd_add'),
-                dcc.Store(id='pie_one'),
-                dcc.Store(id='pie_one_add'),
-                dcc.Store(id='pie_two'),
-                dcc.Store(id='pie_two_add'),
+                dcc.Store(id='pie_one', data=pie_one),
+                dcc.Store(id='pie_one_add', data=pie_one_add),
+                dcc.Store(id='pie_two', data=pie_two),
+                dcc.Store(id='pie_two_add', data=pie_two_add),
 
                 #Compare
                 html.Div(
@@ -265,13 +267,15 @@ layout = html.Div(
                             children=[
                                 html.Div(
                                     id='compare-top-1',
-                                    children='$1,000',
-                                    className='box-top'
+                                    children=paid_save_dol,
+                                    className='box-top',
+                                    style={'display': compare_top_1},
                                 ),
                                 html.Div(
                                     id='compare-bottom-1',
-                                    children='Saved from 14 PMI Payments',
-                                    className='box-bottom'
+                                    children=paid_save_bottom,
+                                    className='box-bottom',
+                                    style={'display': compare_bot_1},
                                 ),
                             ],
                             className='box'
@@ -280,13 +284,15 @@ layout = html.Div(
                             children=[
                                 html.Div(
                                     id='compare-top-2',
-                                    children='$1,000',
-                                    className='box-top'
+                                    children=value_pmi_time_save,
+                                    className='box-top',
+                                    style={'display': compare_top_2},
                                 ),
                                 html.Div(
                                     id='compare-bottom-2',
                                     children='PMI Time Saved',
-                                    className='box-bottom'
+                                    className='box-bottom',
+                                    style={'display': compare_bot_2},
                                 ),
                             ],
                             className='box'
@@ -295,12 +301,12 @@ layout = html.Div(
                             children=[
                                 html.Div(
                                     id='compare-top-3',
-                                    children='$1,000',
+                                    children=tot_save_dol,
                                     className='box-top'
                                 ),
                                 html.Div(
                                     id='compare-bottom-3',
-                                    children='Saved from 54 Payments',
+                                    children=tot_save_bottom,
                                     className='box-bottom'
                                 ),
                             ],
@@ -310,7 +316,7 @@ layout = html.Div(
                             children=[
                                 html.Div(
                                     id='compare-top-4',
-                                    children='$1,000',
+                                    children=value_tot_time_save,
                                     className='box-top'
                                 ),
                                 html.Div(
@@ -325,7 +331,7 @@ layout = html.Div(
                             children=[
                                 html.Div(
                                     id='compare-top-5',
-                                    children='$1,000',
+                                    children=int_save_dol,
                                     className='box-top'
                                 ),
                                 html.Div(
@@ -340,7 +346,7 @@ layout = html.Div(
                             children=[
                                 html.Div(
                                     id='compare-top-6',
-                                    children='$1,000',
+                                    children=esc_save_dol,
                                     className='box-top'
                                 ),
                                 html.Div(
@@ -366,7 +372,7 @@ layout = html.Div(
                             children=[
                                 html.Div(
                                     id='no-add-top-1',
-                                    children='$1,000',
+                                    children=tot_pay_esc_pmi_dol,
                                     className='box-top'
                                 ),
                                 html.Div(
@@ -381,12 +387,12 @@ layout = html.Div(
                             children=[
                                 html.Div(
                                     id='no-add-top-2',
-                                    children='$1,000',
+                                    children=tot_pay_esc_dol,
                                     className='box-top'
                                 ),
                                 html.Div(
                                     id='no-add-bottom-2',
-                                    children='After 66 Months',
+                                    children=bot_2,
                                     className='box-bottom'
                                 ),
                             ],
@@ -396,13 +402,15 @@ layout = html.Div(
                             children=[
                                 html.Div(
                                     id='no-add-top-3',
-                                    children='$1,000',
-                                    className='box-top'
+                                    children=pmi_pay_dol,
+                                    className='box-top',
+                                    style=top_3_show
                                 ),
                                 html.Div(
                                     id='no-add-bottom-3',
-                                    children='66 PMI Payments',
-                                    className='box-bottom'
+                                    children=bot_3,
+                                    className='box-bottom',
+                                    style=bot_3_show
                                 ),
                             ],
                             className='box'
@@ -411,13 +419,15 @@ layout = html.Div(
                             children=[
                                 html.Div(
                                     id='no-add-top-4',
-                                    children='$1,000',
-                                    className='box-top'
+                                    children=pmi_paid_dol,
+                                    className='box-top',
+                                    style=top_4_show
                                 ),
                                 html.Div(
                                     id='no-add-bottom-4',
-                                    children='Total PMI to Jul 2027',
-                                    className='box-bottom'
+                                    children=bot_4,
+                                    className='box-bottom',
+                                    style=bot_4_show
                                 ),
                             ],
                             className='box'
@@ -426,7 +436,7 @@ layout = html.Div(
                             children=[
                                 html.Div(
                                     id='no-add-top-5',
-                                    children='$1,000',
+                                    children=tot_pay_dol,
                                     className='box-top'
                                 ),
                                 html.Div(
@@ -441,7 +451,7 @@ layout = html.Div(
                             children=[
                                 html.Div(
                                     id='no-add-top-6',
-                                    children='$1,000',
+                                    children=esc_pay_dol,
                                     className='box-top'
                                 ),
                                 html.Div(
@@ -456,7 +466,7 @@ layout = html.Div(
                             children=[
                                 html.Div(
                                     id='no-add-top-7',
-                                    children='$1,000',
+                                    children=ann_pay_dol,
                                     className='box-top'
                                 ),
                                 html.Div(
@@ -471,7 +481,7 @@ layout = html.Div(
                             children=[
                                 html.Div(
                                     id='no-add-top-8',
-                                    children='$1,000',
+                                    children=loan_date_shown,
                                     className='box-top'
                                 ),
                                 html.Div(
@@ -486,13 +496,15 @@ layout = html.Div(
                             children=[
                                 html.Div(
                                     id='no-add-top-9',
-                                    children='$1,000',
-                                    className='box-top'
+                                    children=down_pay_dol,
+                                    className='box-top',
+                                    style=top_9_show
                                 ),
                                 html.Div(
                                     id='no-add-bottom-9',
                                     children='Down Payment Amount',
-                                    className='box-bottom'
+                                    className='box-bottom',
+                                    style=bot_9_show
                                 ),
                             ],
                             className='box'
@@ -501,13 +513,15 @@ layout = html.Div(
                             children=[
                                 html.Div(
                                     id='no-add-top-10',
-                                    children='$1,000',
-                                    className='box-top'
+                                    children=percent_down_per,
+                                    className='box-top',
+                                    style=top_10_show
                                 ),
                                 html.Div(
                                     id='no-add-bottom-10',
                                     children='Down Payment Percentage',
-                                    className='box-bottom'
+                                    className='box-bottom',
+                                    style=bot_10_show
                                 ),
                             ],
                             className='box'
@@ -516,7 +530,7 @@ layout = html.Div(
                             children=[
                                 html.Div(
                                     id='no-add-top-11',
-                                    children='$1,000',
+                                    children=int_paid_dol,
                                     className='box-top'
                                 ),
                                 html.Div(
@@ -531,7 +545,7 @@ layout = html.Div(
                             children=[
                                 html.Div(
                                     id='no-add-top-12',
-                                    children='$1,000',
+                                    children=tax_paid_dol,
                                     className='box-top'
                                 ),
                                 html.Div(
@@ -546,7 +560,7 @@ layout = html.Div(
                             children=[
                                 html.Div(
                                     id='no-add-top-13',
-                                    children='$1,000',
+                                    children=ins_paid_dol,
                                     className='box-top'
                                 ),
                                 html.Div(
@@ -561,12 +575,12 @@ layout = html.Div(
                             children=[
                                 html.Div(
                                     id='no-add-top-14',
-                                    children='$1,000',
+                                    children=tot_paid_dol,
                                     className='box-top'
                                 ),
                                 html.Div(
                                     id='no-add-bottom-14',
-                                    children='Total of 360 Payments',
+                                    children=bot_14,
                                     className='box-bottom'
                                 ),
                             ],
@@ -595,7 +609,7 @@ layout = html.Div(
                             children=[
                                 html.Div(
                                     id='add-top-1',
-                                    children='$1,000',
+                                    children=tot_pay_esc_pmi_dol_add,
                                     className='box-top'
                                 ),
                                 html.Div(
@@ -610,12 +624,12 @@ layout = html.Div(
                             children=[
                                 html.Div(
                                     id='add-top-2',
-                                    children='$1,000',
+                                    children=tot_pay_esc_dol_add,
                                     className='box-top'
                                 ),
                                 html.Div(
                                     id='add-bottom-2',
-                                    children='After 66 Months',
+                                    children=bot_2_add,
                                     className='box-bottom'
                                 ),
                             ],
@@ -625,13 +639,15 @@ layout = html.Div(
                             children=[
                                 html.Div(
                                     id='add-top-3',
-                                    children='$1,000',
-                                    className='box-top'
+                                    children=pmi_pay_dol_add,
+                                    className='box-top',
+                                    style=top_3_show_add
                                 ),
                                 html.Div(
                                     id='add-bottom-3',
-                                    children='66 PMI Payments',
-                                    className='box-bottom'
+                                    children=bot_3_add,
+                                    className='box-bottom',
+                                    style=bot_3_show_add
                                 ),
                             ],
                             className='box'
@@ -640,13 +656,15 @@ layout = html.Div(
                             children=[
                                 html.Div(
                                     id='add-top-4',
-                                    children='$1,000',
-                                    className='box-top'
+                                    children=pmi_paid_dol_add,
+                                    className='box-top',
+                                    style=top_4_show_add
                                 ),
                                 html.Div(
                                     id='add-bottom-4',
-                                    children='Total PMI to Jul 2027',
-                                    className='box-bottom'
+                                    children=bot_4_add,
+                                    className='box-bottom',
+                                    style=bot_4_show_add
                                 ),
                             ],
                             className='box'
@@ -655,7 +673,7 @@ layout = html.Div(
                             children=[
                                 html.Div(
                                     id='add-top-5',
-                                    children='$1,000',
+                                    children=tot_pay_dol_add,
                                     className='box-top'
                                 ),
                                 html.Div(
@@ -670,7 +688,7 @@ layout = html.Div(
                             children=[
                                 html.Div(
                                     id='add-top-6',
-                                    children='$1,000',
+                                    children=esc_pay_dol_add,
                                     className='box-top'
                                 ),
                                 html.Div(
@@ -685,7 +703,7 @@ layout = html.Div(
                             children=[
                                 html.Div(
                                     id='add-top-7',
-                                    children='$1,000',
+                                    children=ann_pay_dol_add,
                                     className='box-top'
                                 ),
                                 html.Div(
@@ -700,7 +718,7 @@ layout = html.Div(
                             children=[
                                 html.Div(
                                     id='add-top-8',
-                                    children='$1,000',
+                                    children=loan_date_shown_add,
                                     className='box-top'
                                 ),
                                 html.Div(
@@ -715,13 +733,15 @@ layout = html.Div(
                             children=[
                                 html.Div(
                                     id='add-top-9',
-                                    children='$1,000',
-                                    className='box-top'
+                                    children=down_pay_dol_add,
+                                    className='box-top',
+                                    style=top_9_show_add
                                 ),
                                 html.Div(
                                     id='add-bottom-9',
                                     children='Down Payment Amount',
-                                    className='box-bottom'
+                                    className='box-bottom',
+                                    style=bot_9_show_add
                                 ),
                             ],
                             className='box'
@@ -730,13 +750,15 @@ layout = html.Div(
                             children=[
                                 html.Div(
                                     id='add-top-10',
-                                    children='$1,000',
-                                    className='box-top'
+                                    children=percent_down_per_add,
+                                    className='box-top',
+                                    style=top_10_show_add
                                 ),
                                 html.Div(
                                     id='add-bottom-10',
                                     children='Down Payment Percentage',
-                                    className='box-bottom'
+                                    className='box-bottom',
+                                    style=bot_10_show_add
                                 ),
                             ],
                             className='box'
@@ -745,7 +767,7 @@ layout = html.Div(
                             children=[
                                 html.Div(
                                     id='add-top-11',
-                                    children='$1,000',
+                                    children=int_paid_dol_add,
                                     className='box-top'
                                 ),
                                 html.Div(
@@ -760,7 +782,7 @@ layout = html.Div(
                             children=[
                                 html.Div(
                                     id='add-top-12',
-                                    children='$1,000',
+                                    children=tax_paid_dol_add,
                                     className='box-top'
                                 ),
                                 html.Div(
@@ -775,7 +797,7 @@ layout = html.Div(
                             children=[
                                 html.Div(
                                     id='add-top-13',
-                                    children='$1,000',
+                                    children=ins_paid_dol_add,
                                     className='box-top'
                                 ),
                                 html.Div(
@@ -790,12 +812,12 @@ layout = html.Div(
                             children=[
                                 html.Div(
                                     id='add-top-14',
-                                    children='$1,000',
+                                    children=tot_paid_dol_add,
                                     className='box-top'
                                 ),
                                 html.Div(
                                     id='add-bottom-14',
-                                    children='Total of 360 Payments',
+                                    children=bot_14_add,
                                     className='box-bottom'
                                 ),
                             ],

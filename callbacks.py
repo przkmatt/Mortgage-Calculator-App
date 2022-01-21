@@ -6,8 +6,8 @@ import numpy as np
 import pandas as pd
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
-from dash import Dash, dcc, html, Input, Output, State  # pip install dash (version 2.0.0 or higher)
-from default_calc import home_price_default, down_payment_default, \
+from dash import Dash, dcc, html, Input, Output, State, exceptions  # pip install dash (version 2.0.0 or higher)
+from default_calc import home_price_default, down_payment_default, down_pay_perc_default, \
     loan_time_default, interest_rate_default, pmi_rate_default, additional_payment_default, loan_rem_default, loan_pay_default, \
     pmi_amt_default, mort_amt_default, tax_amt_default
 def get_callbacks(app):
@@ -17,23 +17,31 @@ def get_callbacks(app):
          Output(component_id='row2', component_property='placeholder'),
          Output(component_id='text3', component_property='children'),
          Output(component_id='row3', component_property='placeholder'),
+         Output(component_id='right3', component_property='children'),
          Output(component_id='text5', component_property='children'),
          Output(component_id='row5', component_property='placeholder'),
+         Output(component_id='right5', component_property='children'),
          Output(component_id='dollarpercent', component_property='style'),
          Output(component_id='menu-row-right-2', component_property='style'),
          Output(component_id='loan-date', component_property='style'),
          ],
-        [Input(component_id='loan_option', component_property='value')
+        [Input(component_id='loan_option', component_property='value'),
+         Input(component_id='dollarpercent', component_property='value')
          ]
     )
-    def choose_loan_type(option_sel):
+    def choose_loan_type(option_sel, dollarpercent):
         if option_sel == 'noloan':
             text2 = 'Down Payment: '
-            row2 = down_payment_default
+            if dollarpercent == 'dollar':
+                row2 = down_payment_default
+            else:
+                row2 = down_pay_perc_default
             text3 = 'Loan Length: '
             row3 = loan_time_default
-            text5 = 'PMI Rate (%): '
+            right3 = 'years'
+            text5 = 'PMI Rate: '
             row5 = pmi_rate_default
+            right5 = '%'
             percent_option = 'block'
             right_row = 'none'
             loan_date = 'flex'
@@ -42,12 +50,14 @@ def get_callbacks(app):
             row2 = loan_rem_default
             text3 = 'Monthly Payment(Loan only): '
             row3 = loan_pay_default
+            right3 = '$'
             text5 = 'PMI Monthly Payment: '
             row5 = pmi_amt_default
+            right5 = '$'
             percent_option = 'none'
             right_row = 'block'
             loan_date = 'none'
-        return text2, row2, text3, row3, text5, row5, {'display': percent_option}, {'display': right_row}, \
+        return text2, row2, text3, row3, right3, text5, row5, right5, {'display': percent_option}, {'display': right_row}, \
                {'display': loan_date},
 
     #app callback to run the program and return the graph and df to download
@@ -68,31 +78,45 @@ def get_callbacks(app):
          State(component_id='row8', component_property='value'),
          State(component_id='date_dropdown', component_property='value'),
          State(component_id='row9', component_property='value'),
+         State(component_id='dollarpercent', component_property='value'),
          ]
     )
-    def calc_df(click, loan_type, value1, value2, value3, value4, value5, value6, value7, value8, date_dropdown, row9):
-        #initial run set to value
-        if value1 is None:
-            value1=home_price_default
-        if value2 is None:
-            value2=loan_rem_default
-        if value3 is None:
-            value3=loan_pay_default
-        if value4 is None:
-            value4=interest_rate_default
-        if value5 is None:
-            value5=pmi_amt_default
-        if value6 is None:
-            value6=mort_amt_default
-        if value7 is None:
-            value7=tax_amt_default
-        if value8 is None:
-            value8=additional_payment_default
+    def calc_df(click, loan_type, value1, value2, value3, value4, value5, value6, value7, value8, date_dropdown, row9, dollarpercent):
+        #dont run on start up
+        if click == 0:
+            raise exceptions.PreventUpdate()
 
-        #calculating the loan with first principles and putting it into a dataframe
+        #setting parameters for the inputs
+
+
+        #setting values if none to default
         if loan_type == 'noloan':
+            # initial run set to value
+            if value1 is None:
+                value1 = home_price_default
+            if value2 is None:
+                if dollarpercent == 'percent':
+                    value2 = down_pay_perc_default
+                else:
+                    value2 = down_payment_default
+            if value3 is None:
+                value3 = loan_time_default
+            if value4 is None:
+                value4 = interest_rate_default
+            if value5 is None:
+                value5 = pmi_rate_default
+            if value6 is None:
+                value6 = mort_amt_default
+            if value7 is None:
+                value7 = tax_amt_default
+            if value8 is None:
+                value8 = additional_payment_default
+
             home_price = float(value1)
-            down_pay = float(value2)
+            if dollarpercent == 'percent':
+                down_pay = float(value2)/100 * home_price
+            else:
+                down_pay = float(value2)
             loan_time = float(value3)
             interest = float(value4)
             pmi_rate = float(value5)
@@ -101,6 +125,24 @@ def get_callbacks(app):
             add_pay = float(value8)
             loan_start = date(row9, date_dropdown, 15)
         else:
+            # initial run set to value
+            if value1 is None:
+                value1 = home_price_default
+            if value2 is None:
+                value2 = loan_rem_default
+            if value3 is None:
+                value3 = loan_pay_default
+            if value4 is None:
+                value4 = interest_rate_default
+            if value5 is None:
+                value5 = pmi_amt_default
+            if value6 is None:
+                value6 = mort_amt_default
+            if value7 is None:
+                value7 = tax_amt_default
+            if value8 is None:
+                value8 = additional_payment_default
+
             home_price = float(value1)
             loan_rem = float(value2)
             loan_pay = float(value3)
@@ -110,6 +152,8 @@ def get_callbacks(app):
             tax_amt_yr = float(value7)
             add_pay = float(value8)
             loan_start = date(row9, date_dropdown, 15)
+
+        #start the calculation
         if loan_type == 'noloan':
             df_add = pd.read_csv('Mortgage.csv')
             df = pd.read_csv('Mortgage.csv')
@@ -432,8 +476,9 @@ def get_callbacks(app):
     def default_loan(amort_schd, amort_schd_add, home_price, loan_option):
         df = pd.DataFrame.from_dict(amort_schd, orient='columns')
         if home_price is None:
-            home_price = home_price_default
-
+            home_price = float(home_price_default)
+        else:
+            home_price = float(home_price)
         # getting values from dataframe
         value_tot_pay_esc_pmi = round(df.at[0, 'TOTAL PAYMENT W ESCROW'], 2)
         value_pmi_pay = round(df.at[0, 'PMI'], 2)
@@ -451,7 +496,7 @@ def get_callbacks(app):
         value_tot_paid = value_int_paid + value_tax_paid + value_ins_paid + value_pmi_paid \
             + (value_tot_pay * value_loan_cnt)
         value_down_pay = home_price - round(df.at[0, 'BEGINNING BALANCE'], 2)
-        value_percent_down = round(round(df.at[0, 'BEGINNING BALANCE'], 2) / home_price * 100, 2)
+        value_percent_down = 100 - round(round(df.at[0, 'BEGINNING BALANCE'], 2) / home_price * 100, 2)
 
         #converting values to values to be seen on screen
         tot_pay_esc_pmi_dol = "${:,.2f}".format(value_tot_pay_esc_pmi) #total mth payment
@@ -473,7 +518,7 @@ def get_callbacks(app):
             pmi_paid_dol = "${:,.2f}".format(value_pmi_paid)
             bot_4 = "Total PMI to " + datetime.strptime(value_pmi_date, "%Y-%m-%d").strftime("%b %Y")
             down_pay_dol = "${:,.2f}".format(value_down_pay)
-            percent_down_per = "%{:,.0f}".format(value_percent_down)
+            percent_down_per = "{:,.0f}%".format(value_percent_down)
 
             top_3_show = {'display': 'flex'}
             bot_3_show = {'display': 'flex'}
@@ -502,14 +547,14 @@ def get_callbacks(app):
             top_10_show = {'display': 'none'}
             bot_10_show = {'display': 'none'}
         elif value_pmi_cnt == 0 and loan_option == 'noloan':
-            tot_pay_esc_dol = 0
-            bot_2 = 0
+            tot_pay_esc_dol = "PMI"
+            bot_2 = "not required"
             pmi_pay_dol = 0
             bot_3 = 0
             pmi_paid_dol = 0
             bot_4 = 0
             down_pay_dol = "${:,.2f}".format(value_down_pay)
-            percent_down_per = "%{:,.0f}".format(value_percent_down)
+            percent_down_per = "{:,.0f}%".format(value_percent_down)
 
             top_3_show = {'display': 'none'}
             bot_3_show = {'display': 'none'}
@@ -520,8 +565,8 @@ def get_callbacks(app):
             top_10_show = {'display': 'flex'}
             bot_10_show = {'display': 'flex'}
         else:
-            tot_pay_esc_dol = 0
-            bot_2 = 0
+            tot_pay_esc_dol = "PMI"
+            bot_2 = "not required"
             pmi_pay_dol = 0
             bot_3 = 0
             pmi_paid_dol = 0
@@ -583,16 +628,19 @@ def get_callbacks(app):
          ]
     )
     def default_loan_add(amort_schd, amort_schd_add, home_price, loan_option, additional_payment):
+        if home_price is None:
+            home_price = float(home_price_default)
+        else:
+            home_price = float(home_price)
+        if additional_payment is None:
+            additional_payment = float(additional_payment_default)
+        else:
+            additional_payment = float(additional_payment)
         df = pd.DataFrame.from_dict(amort_schd_add, orient='columns')
         df_no_add = pd.DataFrame.from_dict(amort_schd, orient='columns')
         compare_interest = round(df['INTEREST'].sum(), 2) - round(df_no_add['INTEREST'].sum(), 2)
         if compare_interest == 0:
-            return 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-
-        if home_price is None:
-            home_price = home_price_default
-        if additional_payment is None:
-            additional_payment = additional_payment_default
+            raise exceptions.PreventUpdate()
 
         # getting values from dataframe
         value_tot_pay_esc_pmi = round(df.at[0, 'TOTAL PAYMENT W ESCROW'], 2)
@@ -611,7 +659,7 @@ def get_callbacks(app):
         value_tot_paid = value_int_paid + value_tax_paid + value_ins_paid + value_pmi_paid \
             + ((value_tot_pay - additional_payment) * value_loan_cnt)
         value_down_pay = home_price - round(df.at[0, 'BEGINNING BALANCE'], 2)
-        value_percent_down = round(round(df.at[0, 'BEGINNING BALANCE'], 2) / home_price * 100, 2)
+        value_percent_down = 100 - round(round(df.at[0, 'BEGINNING BALANCE'], 2) / home_price * 100, 2)
 
         #converting values to values to be seen on screen
         tot_pay_esc_pmi_dol = "${:,.2f}".format(value_tot_pay_esc_pmi) #total mth payment
@@ -633,7 +681,7 @@ def get_callbacks(app):
             pmi_paid_dol = "${:,.2f}".format(value_pmi_paid)
             bot_4 = "Total PMI to " + datetime.strptime(value_pmi_date, "%Y-%m-%d").strftime("%b %Y")
             down_pay_dol = "${:,.2f}".format(value_down_pay)
-            percent_down_per = "%{:,.0f}".format(value_percent_down)
+            percent_down_per = "{:,.0f}%".format(value_percent_down)
 
             top_3_show = {'display': 'flex'}
             bot_3_show = {'display': 'flex'}
@@ -662,14 +710,14 @@ def get_callbacks(app):
             top_10_show = {'display': 'none'}
             bot_10_show = {'display': 'none'}
         elif value_pmi_cnt == 0 and loan_option == 'noloan':
-            tot_pay_esc_dol = 0
-            bot_2 = 0
+            tot_pay_esc_dol = "PMI"
+            bot_2 = "not required"
             pmi_pay_dol = 0
             bot_3 = 0
             pmi_paid_dol = 0
             bot_4 = 0
             down_pay_dol = "${:,.2f}".format(value_down_pay)
-            percent_down_per = "%{:,.0f}".format(value_percent_down)
+            percent_down_per = "{:,.0f}%".format(value_percent_down)
 
             top_3_show = {'display': 'none'}
             bot_3_show = {'display': 'none'}
@@ -680,8 +728,8 @@ def get_callbacks(app):
             top_10_show = {'display': 'flex'}
             bot_10_show = {'display': 'flex'}
         else:
-            tot_pay_esc_dol = 0
-            bot_2 = 0
+            tot_pay_esc_dol = "PMI"
+            bot_2 = "not required"
             pmi_pay_dol = 0
             bot_3 = 0
             pmi_paid_dol = 0
@@ -718,6 +766,10 @@ def get_callbacks(app):
          ]
     )
     def pie_charts(amort_schd, amort_schd_add, add_pay):
+        if add_pay is None:
+            add_pay = float(additional_payment_default)
+        else:
+            add_pay = float(add_pay)
         df_add = pd.DataFrame.from_dict(amort_schd_add, orient='columns')
         df = pd.DataFrame.from_dict(amort_schd, orient='columns')
         # Create pie/bar charts to show to user

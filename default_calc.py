@@ -13,6 +13,7 @@ current_date = date(current_year, current_month, 15)
 #creating variables for defaults in my app
 home_price_default = 200000
 down_payment_default = 20000
+down_pay_perc_default = 20
 loan_time_default = 30
 interest_rate_default = 3.5
 pmi_rate_default = .5
@@ -20,8 +21,8 @@ additional_payment_default = 100
 loan_rem_default = 180000
 loan_pay_default = 850
 pmi_amt_default = 75
-mort_amt_default = 100
-tax_amt_default = 100
+mort_amt_default = 2400
+tax_amt_default = 1400
 loan_start_default = current_date
 
 loan_unknown = False
@@ -195,15 +196,6 @@ value_tot_paid = value_int_paid + value_tax_paid + value_ins_paid + value_pmi_pa
 value_down_pay = home_price - round(df.at[0, 'BEGINNING BALANCE'], 2)
 value_percent_down = round(round(df.at[0, 'BEGINNING BALANCE'], 2) / home_price * 100, 2)
 value_first_pay = df.at[0, 'PAYMENT DATE']
-
-value_pmi_cnt_save = value_pmi_cnt - value_pmi_cnt_add
-value_pmi_time_save = str(math.trunc(value_pmi_cnt_save/12)) + 'Years and ' + str(value_pmi_cnt_save % 12) + 'Months'
-value_pmi_paid_save = value_pmi_paid - value_pmi_paid_add
-value_tot_cnt_save = value_loan_cnt - value_loan_cnt_add
-value_tot_time_save = str(math.trunc(value_tot_cnt_save/12)) + 'Years and ' + str(value_tot_cnt_save % 12) + 'Months'
-value_tot_paid_save = value_tot_paid - value_tot_paid_add
-value_int_save = value_int_paid - value_int_paid_add
-value_esc_save = (value_tax_paid - value_tax_paid_add) + (value_ins_paid - value_ins_paid_add)
 
 #convert to yearly dataframes
 df_add_year = df_add
@@ -420,3 +412,50 @@ else:
     bot_9_show_add = {'display': 'none'}
     top_10_show_add = {'display': 'none'}
     bot_10_show_add = {'display': 'none'}
+
+#COMPARE CHART
+if value_pmi_cnt == 0:
+    value_tot_cnt_save = value_loan_cnt - value_loan_cnt_add
+    value_tot_time_save = str(math.trunc(value_tot_cnt_save / 12)) + ' Years and ' + str(
+        value_tot_cnt_save % 12) + ' Months'
+    value_int_save = value_int_paid - value_int_paid_add
+    value_esc_save = (value_tax_paid - value_tax_paid_add) + (value_ins_paid - value_ins_paid_add)
+    value_tot_paid_save = value_int_save + value_esc_save + value_tot_pay * value_tot_cnt_save
+
+    # Convert to dollar values where required
+    tot_save_dol = "${:,.2f}".format(value_tot_paid_save)
+    int_save_dol = "${:,.2f}".format(value_int_save)
+    esc_save_dol = "${:,.2f}".format(value_esc_save)
+
+    tot_save_bottom = "Saved from " + str(round(value_tot_cnt_save, 0)) + " Payments"
+
+    compare_top_1 = 'none'
+    compare_bot_1 = 'none'
+    compare_top_2 = 'none'
+    compare_bot_2 = 'none'
+
+else:
+    value_pmi_cnt_save = value_pmi_cnt - value_pmi_cnt_add
+    value_pmi_time_save = str(math.trunc(value_pmi_cnt_save / 12)) + ' Years and ' + str(
+        value_pmi_cnt_save % 12) + ' Months'
+    value_pmi_paid_save = value_pmi_paid - value_pmi_paid_add
+    value_tot_cnt_save = value_loan_cnt - value_loan_cnt_add
+    value_tot_time_save = str(math.trunc(value_tot_cnt_save / 12)) + ' Years and ' + str(
+        value_tot_cnt_save % 12) + ' Months'
+    value_int_save = value_int_paid - value_int_paid_add
+    value_esc_save = (value_tax_paid - value_tax_paid_add) + (value_ins_paid - value_ins_paid_add)
+    value_tot_paid_save = value_int_save + value_esc_save + value_pmi_paid_save \
+                          + value_tot_pay * value_tot_cnt_save
+
+    # Convert to dollar values where required
+    paid_save_dol = "${:,.2f}".format(value_pmi_paid_save)
+    tot_save_dol = "${:,.2f}".format(value_tot_paid_save)
+    int_save_dol = "${:,.2f}".format(value_int_save)
+    esc_save_dol = "${:,.2f}".format(value_esc_save)
+
+    paid_save_bottom = "Saved from " + str(round(value_pmi_cnt_save, 0)) + " PMI Payments"
+    tot_save_bottom = "Saved from " + str(round(value_tot_cnt_save, 0)) + " Payments"
+    compare_top_1 = 'flex'
+    compare_bot_1 = 'flex'
+    compare_top_2 = 'flex'
+    compare_bot_2 = 'flex'
